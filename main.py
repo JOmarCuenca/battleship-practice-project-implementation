@@ -1,9 +1,8 @@
 
 if __name__ == '__main__':
-    from classes.board import Board
+    
+    from utils.input_interpreter import InputInterperter
 
-    board = Board()
-    print("Player board")
-    print('\n'.join(board.player_lines()))
-    print("Opponent board")
-    print('\n'.join(board.opponent_lines()))
+    input_interpreter = InputInterperter()
+
+    print(input_interpreter.coord_to_tuple('A1'))
