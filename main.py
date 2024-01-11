@@ -1,6 +1,9 @@
 
 if __name__ == '__main__':
-    from utils.file_manager import FileManager
+    from classes.board import Board
 
-    FileManager.check_and_create_directory("test")
-    FileManager.check_and_create_directory("test")
+    board = Board()
+    print("Player board")
+    print('\n'.join(board.player_lines()))
+    print("Opponent board")
+    print('\n'.join(board.opponent_lines()))
