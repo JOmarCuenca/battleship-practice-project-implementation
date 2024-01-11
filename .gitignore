@@ -1,0 +1,5 @@
+# Ignore env folder
+env/
+
+# Ignore all .pyc files (python cache)
+**.pyc
