@@ -9,7 +9,7 @@ class InputInterperter:
         """
         Converts a string coordinate to a tuple coordinate
         """
-        if len(coord) != 2:
+        if not 2 <= len(coord) <= 3:
             raise InvalidCoordInputException(coord)
         
         letter_axis = None
@@ -22,11 +22,13 @@ class InputInterperter:
         number_axis = None
 
         try:
-            number_axis = int(coord[1])
+            number_axis = int(coord[1:])
+            if not 1 <= number_axis <= 10:
+                raise InvalidNumericAxisException(coord[1:])
         except ValueError as e:
-            raise InvalidNumericAxisException(coord[1]) from e
+            raise InvalidNumericAxisException(coord[1:]) from e
         
-        return (letter_axis.value, number_axis)
+        return (letter_axis.value, number_axis - 1)
         
 
 
