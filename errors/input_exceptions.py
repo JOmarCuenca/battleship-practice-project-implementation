@@ -1,13 +1,17 @@
-class InvalidCoordInputException(Exception):
+class InvalidInputException(Exception):
+    pass
+
+
+class InvalidCoordInputException(InvalidInputException):
 
     def __init__(self, coordinate_string):
         self.coordinate_string = coordinate_string
 
     def __str__(self):
-        return f"Coordinate {self.coordinate_string} isn't a valid coordinate. Please enter a coordinate with two characters, like (A1)."
+        return f"Coordinate {self.coordinate_string} isn't a valid coordinate. Please enter a valid coordinate like A1 or J10."
 
 
-class InvalidStrAxisException(Exception):
+class InvalidStrAxisException(InvalidInputException):
 
     def __init__(self, axis):
         self.axis = axis
@@ -16,7 +20,7 @@ class InvalidStrAxisException(Exception):
         return f"Axis {self.axis} isn't a valid axis. Please enter a valid axis, A-J."
 
 
-class InvalidNumericAxisException(Exception):
+class InvalidNumericAxisException(InvalidInputException):
 
     def __init__(self, axis):
         self.axis = axis
