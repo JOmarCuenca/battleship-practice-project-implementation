@@ -85,6 +85,10 @@ class HumanPlayer(Player):
 class ComputerPlayer(Player):
     name: str = "Computer"
 
+    def __init__(self, surname: str = ""):
+        super().__init__()
+        self.name = f"{self.name} {surname}"
+
 import random
 
 class EasyComputerPlayer(ComputerPlayer):
