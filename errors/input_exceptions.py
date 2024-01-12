@@ -27,3 +27,12 @@ class InvalidNumericAxisException(InvalidInputException):
 
     def __str__(self):
         return f"Axis {self.axis} isn't a valid axis. Please enter a valid axis, 1 - 9."
+
+
+class InvalidDirectionException(InvalidInputException):
+    
+        def __init__(self, direction):
+            self.direction = direction
+    
+        def __str__(self):
+            return f"Direction {self.direction} isn't a valid direction. Please enter a valid direction, up, down, left, right."

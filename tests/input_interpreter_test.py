@@ -1,5 +1,6 @@
+from constants.directions import Direction
 from utils.input_interpreter import InputInterperter
-from errors.input_exceptions import InvalidCoordInputException, InvalidStrAxisException, InvalidNumericAxisException
+from errors.input_exceptions import InvalidCoordInputException, InvalidDirectionException, InvalidStrAxisException, InvalidNumericAxisException
 
 import pytest
 
@@ -33,3 +34,34 @@ def test_valid_coord_inputs(test_input):
 def test_invalid_coord_inputs(test_input, input_exception_type):
     with pytest.raises(input_exception_type):
         interpreter.coord_to_tuple(test_input)
+
+
+@pytest.mark.parametrize("test_input, expected_result", [
+    ('up', Direction.UP),
+    ('down', Direction.DOWN),
+    ('left', Direction.LEFT),
+    ('right', Direction.RIGHT),
+    ('Up', Direction.UP),
+    ('Down', Direction.DOWN),
+    ('Left', Direction.LEFT),
+    ('Right', Direction.RIGHT),
+    ('uP', Direction.UP),
+    ('dOwn', Direction.DOWN),
+    ('lEft', Direction.LEFT),
+    ('rIght', Direction.RIGHT),
+    ('UP', Direction.UP),
+    ('DOWN', Direction.DOWN),
+    ('LEFT', Direction.LEFT),
+    ('RIGHT', Direction.RIGHT),
+])
+def test_valid_direction_inputs(test_input, expected_result):
+    result = interpreter.get_direction(test_input)
+    assert result == expected_result
+
+
+@pytest.mark.parametrize("test_input", [
+    'u', 'd', 'l', 'r', 'uppp', 'downnn', 'lefttt', 'righttt', 'UPPP', 'DOWNNN', 'LEFTTT', 'RIGHTTT',
+])
+def test_invalid_direction_inputs(test_input):
+    with pytest.raises(InvalidDirectionException):
+        interpreter.get_direction(test_input)
