@@ -26,7 +26,8 @@ def print_coord_row():
 
 
 def print_double_coord_row():
-    print(get_coord_row().rjust(BOARD_LEFT_SPACE) + get_coord_row().rjust(BOARD_LEFT_SPACE))
+    print(get_coord_row().rjust(BOARD_LEFT_SPACE) +
+          get_coord_row().rjust(BOARD_LEFT_SPACE))
 
 
 def render_player_board(board: list[str]):
@@ -141,8 +142,20 @@ def main():
     game_over = False
 
     while not game_over:
+        clear_screen()
         defender = next(turns)
-        hit = attacking_player.attack(defender)
+        if args.horizontal:
+            render_game_horizontal(attacking_player.board, defender.board)
+        else:
+            render_game_vertical(attacking_player.board, defender.board)
+
+        hit = False
+
+        try:
+            hit = attacking_player.attack(defender)
+        except KeyboardInterrupt:
+            logger.info("Exiting...")
+            exit(0)
 
         if hit:
             logger.info("Hit!")
@@ -154,10 +167,4 @@ def main():
 
 
 if __name__ == '__main__':
-    player1, player2 = EasyComputerPlayer(), EasyComputerPlayer()
-
-    render_game_vertical(player1.board, player2.board)
-
-    input()
-
-    render_game_horizontal(player1.board, player2.board)
+    main()

@@ -8,6 +8,8 @@ class Args:
     verbose: bool
     log_level: str
     log_file_extension: str
+    horizontal: bool
+
 
     def __str__(self) -> str:
         return str(
@@ -15,6 +17,7 @@ class Args:
                 'verbose': self.verbose,
                 'log_level': self.log_level,
                 'log_file_extension': self.log_file_extension,
+                'horizontal': self.horizontal,
             },
         )
 
@@ -49,6 +52,13 @@ class Args:
             help='Set log file extension path',
             type=str,
             metavar='LOG_FILE_EXTENSION_PATH',
+        )
+
+        parser.add_argument(
+            '--horizontal',
+            action='store_true',
+            dest='horizontal',
+            help='Set gameplay direction to horizontal',
         )
 
         args = parser.parse_args()
