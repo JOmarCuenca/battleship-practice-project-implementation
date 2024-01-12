@@ -30,7 +30,7 @@ class Board:
     def player_lines(self):
         result = []
 
-        for row in self.coordinates:
+        for row in reversed(self.coordinates):
             result.append(self.player_view_row(row))
             result.append(self.board_line())
 
@@ -41,7 +41,7 @@ class Board:
     def opponent_lines(self):
         result = []
 
-        for row in self.coordinates:
+        for row in reversed(self.coordinates):
             result.append(self.opponent_view_row(row))
             result.append(self.board_line())
 
