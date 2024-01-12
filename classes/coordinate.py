@@ -35,4 +35,4 @@ class ShipCoordinate(Coordinate):
         if self.hit:
             return 'X'
         else:
-            return 'B'
+            return 'S'
