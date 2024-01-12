@@ -17,9 +17,16 @@ coord_row = [x.name for x in list(StringCoordinate)]
 BOARD_LEFT_SPACE = 43
 
 
+def get_coord_row():
+    return ' '.join(coord.center(3) for coord in coord_row)
+
+
 def print_coord_row():
-    print((' '.join(coord.center(3)
-          for coord in coord_row)).rjust(BOARD_LEFT_SPACE))
+    print(get_coord_row().rjust(BOARD_LEFT_SPACE))
+
+
+def print_double_coord_row():
+    print(get_coord_row().rjust(BOARD_LEFT_SPACE) + get_coord_row().rjust(BOARD_LEFT_SPACE))
 
 
 def render_player_board(board: list[str]):
@@ -37,18 +44,6 @@ def render_player_board(board: list[str]):
         middle_line = not middle_line
 
 
-def render_player_boards(player_1: list[str], player_2: list[str]):
-    middle_line = False
-    counter = 0
-    for row_1, row_2 in zip(player_1, player_2):
-        if middle_line:
-            print('\t' + row_1 + ' | ' + row_2)
-        else:
-            print(f'{10 - counter}\t' + row_1 + ' | ' + row_2)
-            counter += 1
-        middle_line = not middle_line
-
-
 def render_game_vertical(board_1: Board, board_2: Board):
     print_coord_row()
 
@@ -59,6 +54,30 @@ def render_game_vertical(board_1: Board, board_2: Board):
     render_player_board(board_2.player_lines())
 
     print_coord_row()
+
+
+def render_game_horizontal(board_1: Board, board_2: Board):
+
+    print_double_coord_row()
+
+    left, right = board_1.player_lines(), board_2.opponent_lines()
+
+    middle_line = False
+    counter = 0
+    space = 3
+
+    for left_row, right_row in zip(left, right):
+        if middle_line:
+            print(left_row.rjust(BOARD_LEFT_SPACE) +
+                  right_row.rjust(BOARD_LEFT_SPACE))
+        else:
+            print(f'{10 - counter}'.rjust(space) +
+                  left_row.rjust(BOARD_LEFT_SPACE - space) + f'{10 - counter}'.center(space) + right_row.rjust(BOARD_LEFT_SPACE - space) + f'{10 - counter}'.ljust(space))
+
+            counter += 1
+        middle_line = not middle_line
+
+    print_double_coord_row()
 
 
 def place_ships(player: Player):
@@ -138,3 +157,7 @@ if __name__ == '__main__':
     player1, player2 = EasyComputerPlayer(), EasyComputerPlayer()
 
     render_game_vertical(player1.board, player2.board)
+
+    input()
+
+    render_game_horizontal(player1.board, player2.board)

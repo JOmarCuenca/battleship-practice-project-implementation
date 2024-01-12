@@ -26,7 +26,7 @@ class Board:
     def opponent_view_row(row: list[Coordinate]):
         return '|'.join([coordinate.opponent_view_char().center(3) for coordinate in row])
 
-    def player_lines(self):
+    def player_lines(self) -> list[str]:
         result = []
 
         for row in reversed(self.coordinates):
@@ -37,7 +37,7 @@ class Board:
 
         return result
 
-    def opponent_lines(self):
+    def opponent_lines(self) -> list[str]:
         result = []
 
         for row in reversed(self.coordinates):
