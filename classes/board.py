@@ -2,7 +2,6 @@ from dataclasses import dataclass
 
 from classes.coordinate import Coordinate, ShipCoordinate
 from errors.board_exceptions import InvalidShipPlacementException, OverlappedShipException
-from utils import logger
 
 BOARD_SIZE = 10
 
@@ -49,7 +48,6 @@ class Board:
 
         return result
 
-    @logger.catch(reraise=True)
     def place_ship(self, ship: list[tuple[int, int]]):
         newly_placed_coordinates = set()
 

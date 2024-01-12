@@ -2,6 +2,8 @@ from classes.board import Board
 from classes.ship import SHIPS_PER_GAME
 from classes.player import Player, HumanPlayer, EasyComputerPlayer
 from constants.str_coordinates import StringCoordinate
+from errors.input_exceptions import InvalidInputException
+from errors.board_exceptions import GameBoardException
 from utils import init_log_record, logger
 from utils.args import Args
 from utils.terminal_utils import clear_screen
@@ -40,10 +42,18 @@ def place_ships(player: Player):
                     print_coord_row()
                 player.place_ship(ship)
                 ready = True
+            except (InvalidInputException, GameBoardException) as e:
+                logger.error(e)
+                if isinstance(player, HumanPlayer):
+                    logger.info("Try again")
+                    input("Press enter to continue")
+            except KeyboardInterrupt:
+                logger.info("Exiting...")
+                exit(0)
             except Exception as e:
                 logger.exception(e)
-                logger.info("Try again")
                 if isinstance(player, HumanPlayer):
+                    logger.info("Try again")
                     input("Press enter to continue")
 
     if isinstance(player, HumanPlayer):

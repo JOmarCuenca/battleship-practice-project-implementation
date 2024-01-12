@@ -6,7 +6,6 @@ from constants.directions import Direction
 
 class InputInterperter:
 
-    @logger.catch(reraise=True)
     def coord_to_tuple(self, coord: str):
         """
         Converts a string coordinate to a tuple coordinate
@@ -34,7 +33,6 @@ class InputInterperter:
 
         return (letter_axis.value, number_axis - 1)
 
-    @logger.catch(reraise=True)
     def get_direction(self, dir: str) -> Direction:
         """
         Converts a string direction to a Direction enum
