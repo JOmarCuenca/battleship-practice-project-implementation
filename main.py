@@ -4,6 +4,7 @@ from classes.player import Player, HumanPlayer, EasyComputerPlayer
 from constants.str_coordinates import StringCoordinate
 from errors.input_exceptions import InvalidInputException
 from errors.board_exceptions import GameBoardException
+from errors.game_exceptions import DuplicateCoordException
 from utils import init_log_record, logger
 from utils.args import Args
 from utils.terminal_utils import clear_screen
@@ -112,6 +113,56 @@ def place_ships(player: Player):
         print_coord_row()
 
 
+def play(player_1: Player, player_2: Player, horizontal: bool = False) -> Player:
+    humans = isinstance(player_1, HumanPlayer) or isinstance(
+        player_2, HumanPlayer)
+    turns = cycle([player_1, player_2])
+
+    if randint(0, 1) == 1:
+        # Player 2 starts
+        next(turns)
+
+    attacking_player = next(turns)
+
+    game_over = False
+
+    while not game_over:
+        if humans: clear_screen()
+        defender = next(turns)
+
+        if humans:
+            if horizontal:
+                render_game_horizontal(attacking_player.board, defender.board)
+            else:
+                render_game_vertical(attacking_player.board, defender.board)
+
+        hit = False
+
+        try:
+            hit = attacking_player.attack(defender)
+        except KeyboardInterrupt:
+            logger.info("Exiting...")
+            exit(0)
+        except DuplicateCoordException as e:
+            logger.error(e)
+            if isinstance(attacking_player, HumanPlayer):
+                logger.info("Try again")
+                input("Press enter to continue")
+
+        if hit:
+            logger.info("Hit!")
+            if defender.has_lost():
+                logger.info(f"{attacking_player} wins!")
+                game_over = True
+
+        if not game_over:
+            attacking_player = defender
+
+    logger.debug("Game over")
+
+    return attacking_player
+
+
 def main():
     args = Args.parseArgs()
     init_log_record(args.log_level, args.log_file_extension, args.verbose)
@@ -131,39 +182,13 @@ def main():
         render_player_board(computer.board.player_lines())
         print_coord_row()
 
-    turns = cycle([player, computer])
+    winner = play(player, computer, args.horizontal)
 
-    if randint(0, 1) == 1:
-        # Computer starts
-        next(turns)
+    clear_screen()
+    render_game_horizontal(player.board, computer.board)
 
-    attacking_player = next(turns)
-
-    game_over = False
-
-    while not game_over:
-        clear_screen()
-        defender = next(turns)
-        if args.horizontal:
-            render_game_horizontal(attacking_player.board, defender.board)
-        else:
-            render_game_vertical(attacking_player.board, defender.board)
-
-        hit = False
-
-        try:
-            hit = attacking_player.attack(defender)
-        except KeyboardInterrupt:
-            logger.info("Exiting...")
-            exit(0)
-
-        if hit:
-            logger.info("Hit!")
-            if defender.has_lost():
-                logger.info(f"{attacking_player} wins!")
-                game_over = True
-
-        attacking_player = defender
+    logger.info(f"{winner} wins!")
+    print(f"{winner} wins!")
 
 
 if __name__ == '__main__':
