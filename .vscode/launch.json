@@ -16,6 +16,18 @@
                 "DEBUG",
                 "--verbose",
             ]
+        },
+        {
+            "name": "Run program",
+            "type": "python",
+            "request": "launch",
+            "program": "main.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": [
+                "--log-level",
+                "ERROR",
+            ]
         }
     ]
 }
