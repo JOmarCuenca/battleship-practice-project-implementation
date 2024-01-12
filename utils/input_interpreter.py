@@ -14,6 +14,8 @@ class InputInterperter:
         if not 2 <= len(coord) <= 3:
             raise InvalidCoordInputException(coord)
 
+        coord = coord.upper()
+
         letter_axis = None
 
         try:

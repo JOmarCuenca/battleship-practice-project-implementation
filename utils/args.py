@@ -1,8 +1,7 @@
 import argparse
 from dataclasses import dataclass
 
-LOG_LEVELS = ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']
-
+from constants.log_level import LogLevel
 
 @dataclass(frozen=True, repr=True, eq=True)
 class Args:
@@ -36,9 +35,9 @@ class Args:
         parser.add_argument(
             '--log-level',
             dest='log_level',
-            default='info',
+            default=LogLevel.INFO.name,
             help='Set log level to debug, info, warning, error, critical',
-            choices=LOG_LEVELS,
+            choices=[level.name for level in LogLevel],
             type=str.upper,
             metavar='LOG_LEVEL',
         )
