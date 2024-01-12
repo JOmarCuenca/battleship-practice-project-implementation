@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 
-from .coordinate import Coordinate, ShipCoordinate
+from classes.coordinate import Coordinate, ShipCoordinate
+from errors.board_exceptions import InvalidShipPlacementException, OverlappedShipException
+from utils import logger
 
 BOARD_SIZE = 10
 
@@ -46,3 +48,25 @@ class Board:
         result.pop()
 
         return result
+
+    @logger.catch(reraise=True)
+    def place_ship(self, ship: list[tuple[int, int]]):
+        newly_placed_coordinates = set()
+
+        for coordinate in ship:
+            x, y = coordinate
+
+            if not (0 <= x <= 9 and 0 <= y <= 9):
+                raise InvalidShipPlacementException(coordinate)
+
+            try:
+                if isinstance(self.coordinates[y][x], ShipCoordinate) or coordinate in newly_placed_coordinates:
+                    raise OverlappedShipException(coordinate)
+
+                newly_placed_coordinates.add(coordinate)
+            except IndexError as e:
+                raise InvalidShipPlacementException(coordinate) from e
+
+        for coordinate in ship:
+            x, y = coordinate
+            self.coordinates[y][x] = ShipCoordinate(x, y)
