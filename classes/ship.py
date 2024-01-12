@@ -1,18 +1,17 @@
-from dataclasses import dataclass
-
 from constants.directions import Direction
 
-@dataclass(eq=True, frozen=True)
-class Ship:
-    size: int = 4
 
-    def generate_ship_coordinates(self, start_coordinate: tuple[int, int], direction: Direction) -> list[tuple[int, int]]:
+class Ship:
+    size: int = 0
+
+    @classmethod
+    def generate_ship_coordinates(cls, start_coordinate: tuple[int, int], direction: Direction) -> list[tuple[int, int]]:
         """
         Generates a list of coordinates for a ship
         """
         ship_coordinates = []
 
-        for i in range(self.size):
+        for i in range(cls.size):
             if direction == Direction.UP:
                 ship_coordinates.append(
                     (start_coordinate[0], start_coordinate[1] + i))
@@ -27,18 +26,23 @@ class Ship:
                     (start_coordinate[0] + i, start_coordinate[1]))
 
         return ship_coordinates
-    
+
+
 class Carrier(Ship):
     size: int = 5
+
 
 class Battleship(Ship):
     size: int = 4
 
+
 class Cruiser(Ship):
     size: int = 3
 
+
 class Submarine(Ship):
     size: int = 3
+
 
 class Destroyer(Ship):
     size: int = 2
