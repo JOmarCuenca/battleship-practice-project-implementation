@@ -14,9 +14,12 @@ from random import randint
 
 coord_row = [x.name for x in list(StringCoordinate)]
 
+BOARD_LEFT_SPACE = 43
+
 
 def print_coord_row():
-    print('\t' + ' '.join(coord.center(3) for coord in coord_row))
+    print((' '.join(coord.center(3)
+          for coord in coord_row)).rjust(BOARD_LEFT_SPACE))
 
 
 def render_player_board(board: list[str]):
@@ -24,11 +27,38 @@ def render_player_board(board: list[str]):
     counter = 0
     for row in board:
         if middle_line:
-            print('\t' + row)
+            print(row.rjust(BOARD_LEFT_SPACE))
         else:
-            print(f'{10 - counter}\t' + row)
+            space = 3
+            print(f'{10 - counter}'.rjust(space) +
+                  row.rjust(BOARD_LEFT_SPACE - space) + f'{10 - counter}'.ljust(space))
+
             counter += 1
         middle_line = not middle_line
+
+
+def render_player_boards(player_1: list[str], player_2: list[str]):
+    middle_line = False
+    counter = 0
+    for row_1, row_2 in zip(player_1, player_2):
+        if middle_line:
+            print('\t' + row_1 + ' | ' + row_2)
+        else:
+            print(f'{10 - counter}\t' + row_1 + ' | ' + row_2)
+            counter += 1
+        middle_line = not middle_line
+
+
+def render_game_vertical(board_1: Board, board_2: Board):
+    print_coord_row()
+
+    render_player_board(board_1.opponent_lines())
+
+    print_coord_row()
+
+    render_player_board(board_2.player_lines())
+
+    print_coord_row()
 
 
 def place_ships(player: Player):
@@ -105,4 +135,6 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    player1, player2 = EasyComputerPlayer(), EasyComputerPlayer()
+
+    render_game_vertical(player1.board, player2.board)
