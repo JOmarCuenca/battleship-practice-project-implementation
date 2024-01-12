@@ -32,29 +32,6 @@ class InputInterperter:
 
         return (letter_axis.value, number_axis - 1)
 
-    def generate_ship_coordinates(self, start_coordinate: str, direction: Direction, size: int):
-        """
-        Generates a list of coordinates for a ship
-        """
-        start_coordinate = self.coord_to_tuple(start_coordinate)
-        ship_coordinates = []
-
-        for i in range(size):
-            if direction == Direction.UP:
-                ship_coordinates.append(
-                    (start_coordinate[0], start_coordinate[1] + i))
-            elif direction == Direction.DOWN:
-                ship_coordinates.append(
-                    (start_coordinate[0], start_coordinate[1] - i))
-            elif direction == Direction.LEFT:
-                ship_coordinates.append(
-                    (start_coordinate[0] - i, start_coordinate[1]))
-            elif direction == Direction.RIGHT:
-                ship_coordinates.append(
-                    (start_coordinate[0] + i, start_coordinate[1]))
-
-        return ship_coordinates
-    
     @logger.catch(reraise=True)
     def get_direction(self, dir: str) -> Direction:
         """
