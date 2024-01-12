@@ -9,13 +9,13 @@ class Coordinate:
 
     def opponent_view_char(self):
         if self.hit:
-            return '.'
+            return '0'
         else:
             return ' '
 
     def player_view_char(self):
         if self.hit:
-            return '.'
+            return '0'
         else:
             return ' '
 
