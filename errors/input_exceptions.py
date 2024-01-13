@@ -26,7 +26,7 @@ class InvalidNumericAxisException(InvalidInputException):
         self.axis = axis
 
     def __str__(self):
-        return f"Axis {self.axis} isn't a valid axis. Please enter a valid axis, 1 - 9."
+        return f"Axis {self.axis} isn't a valid axis. Please enter a valid axis, 1 - 10."
 
 
 class InvalidDirectionException(InvalidInputException):
