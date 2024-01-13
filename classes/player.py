@@ -1,8 +1,9 @@
+import random
 from classes.board import Board
 from classes.coordinate import ShipCoordinate
 from classes.ship import Ship
 from constants.directions import Direction
-from errors.game_exceptions import DuplicateCoordException
+from errors.game_exceptions import DuplicateCoordException, InvalidAttackCoordException
 from utils import logger
 from utils.input_interpreter import InputInterperter
 
@@ -10,6 +11,7 @@ from utils.input_interpreter import InputInterperter
 class Player:
     name: str = "Player"
     board: Board
+    boats_placed: bool = False
 
     def __init__(self):
         self.reset_board()
@@ -20,6 +22,7 @@ class Player:
 
     def reset_board(self):
         self.set_board(Board())
+        self.boats_placed = False
         logger.debug(f"Board reset for {self.name}")
 
     def has_lost(self) -> bool:
@@ -43,7 +46,10 @@ class Player:
     def defend(self, attacked_coord: tuple[int, int]) -> bool:
         logger.debug(f"{self.name} is was attacked at {attacked_coord}")
 
-        coord = self.board.coordinates[attacked_coord[1]][attacked_coord[0]]
+        try:
+            coord = self.board.coordinates[attacked_coord[1]][attacked_coord[0]]
+        except IndexError:
+            raise InvalidAttackCoordException(attacked_coord) from IndexError
 
         if coord.hit:
             raise DuplicateCoordException(attacked_coord)
@@ -68,6 +74,9 @@ class Player:
 
         return ship_coordinates
 
+    def __str__(self):
+        return self.name
+
 
 class HumanPlayer(Player):
     name: str = "Human"
@@ -89,13 +98,50 @@ class ComputerPlayer(Player):
         super().__init__()
         self.name = f"{self.name} {surname}"
 
-import random
-
-class EasyComputerPlayer(ComputerPlayer):
-    name: str = "Easy Computer"
-
     def pick_coordinate(self) -> tuple[int, int]:
         return (random.randint(0, 9), random.randint(0, 9))
 
     def pick_direction(self) -> Direction:
         return random.choice(list(Direction))
+
+
+class BeginnerComputerPlayer(ComputerPlayer):
+    name: str = "Random Computer"
+
+
+class SmartComputerPlayer(ComputerPlayer):
+    name: str = "Expert Computer"
+
+    target_coord: tuple[int, int] = (0, 0)
+
+    hit_coords: set[tuple[int, int]] = set()
+    boat_probable_coords: list[tuple[int, int]] = []
+
+    def pick_coordinate(self) -> tuple[int, int]:
+        if self.boats_placed and self.boat_probable_coords:
+            self.target_coord = random.choice(self.boat_probable_coords)
+            self.boat_probable_coords.remove(self.target_coord)
+
+        else:
+            self.target_coord = super().pick_coordinate()
+
+            while self.target_coord in self.hit_coords:
+                self.target_coord = super().pick_coordinate()
+            
+        return self.target_coord
+
+    def attack(self, opponent) -> bool:
+        hit = super().attack(opponent)
+
+        self.hit_coords.add(self.target_coord)
+
+        if hit:
+            self.boat_probable_coords.extend([
+                (self.target_coord[0] + 1, self.target_coord[1]),
+                (self.target_coord[0] - 1, self.target_coord[1]),
+                (self.target_coord[0], self.target_coord[1] + 1),
+                (self.target_coord[0], self.target_coord[1] - 1),
+            ])
+            
+
+        return hit
