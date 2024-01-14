@@ -36,3 +36,12 @@ class InvalidDirectionException(InvalidInputException):
     
         def __str__(self):
             return f"Direction {self.direction} isn't a valid direction. Please enter a valid direction, up, down, left, right."
+
+
+class InvalidDifficultyException(InvalidInputException):
+
+    def __init__(self, difficulty):
+        self.difficulty = difficulty
+
+    def __str__(self):
+        return f"Difficulty {self.difficulty} isn't a valid difficulty. Please enter a valid difficulty, easy, medium, hard."
