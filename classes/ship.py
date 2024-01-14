@@ -48,4 +48,4 @@ class Destroyer(Ship):
     size: int = 2
 
 
-SHIPS_PER_GAME = [Carrier, Battleship, Cruiser, Submarine, Destroyer]
+SHIPS_PER_GAME = [Carrier(), Battleship(), Cruiser(), Submarine(), Destroyer()]

@@ -16,6 +16,8 @@
                 "DEBUG",
                 "--verbose",
                 "--horizontal",
+                "--pvc",
+                "MEDIUM",
             ]
         },
         {

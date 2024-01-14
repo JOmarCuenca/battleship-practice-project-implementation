@@ -47,7 +47,8 @@ class Player:
         logger.debug(f"{self.name} is was attacked at {attacked_coord}")
 
         try:
-            coord = self.board.coordinates[attacked_coord[1]][attacked_coord[0]]
+            coord = self.board.coordinates[attacked_coord[1]
+                                           ][attacked_coord[0]]
         except IndexError:
             raise InvalidAttackCoordException(attacked_coord) from IndexError
 
@@ -110,7 +111,7 @@ class BeginnerComputerPlayer(ComputerPlayer):
 
 
 class SmartComputerPlayer(ComputerPlayer):
-    name: str = "Expert Computer"
+    name: str = "Smart Computer"
 
     target_coord: tuple[int, int] = (0, 0)
 
@@ -127,7 +128,7 @@ class SmartComputerPlayer(ComputerPlayer):
 
             while self.target_coord in self.hit_coords:
                 self.target_coord = super().pick_coordinate()
-            
+
         return self.target_coord
 
     def attack(self, opponent) -> bool:
@@ -142,6 +143,5 @@ class SmartComputerPlayer(ComputerPlayer):
                 (self.target_coord[0], self.target_coord[1] + 1),
                 (self.target_coord[0], self.target_coord[1] - 1),
             ])
-            
 
         return hit

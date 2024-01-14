@@ -1,10 +1,11 @@
 from classes.board import Board
 from classes.ship import SHIPS_PER_GAME
-from classes.player import SmartComputerPlayer, Player, HumanPlayer, BeginnerComputerPlayer
+from classes.player import Player, HumanPlayer
 from constants.str_coordinates import StringCoordinate
-from errors.input_exceptions import InvalidCoordInputException, InvalidInputException
+from constants.ai_player_difficulty import AIPlayerDifficulty
+from errors.input_exceptions import InvalidInputException
 from errors.board_exceptions import GameBoardException
-from errors.game_exceptions import DuplicateCoordException, GameplayException
+from errors.game_exceptions import GameplayException
 from utils import init_log_record, logger
 from utils.args import Args
 from utils.terminal_utils import clear_screen
@@ -178,25 +179,30 @@ def main():
     args = Args.parseArgs()
     init_log_record(args.log_level, args.log_file_extension, args.verbose)
 
-    player = HumanPlayer()
+    player_1, player_2 = HumanPlayer(), None
 
-    place_ships(player)
-    logger.info("Player ships placed")
+    try:
+        if args.pvp:
+            player_1.name = input("Player 1 name: ")
+            player_2 = HumanPlayer()
+            player_2.name = input("Player 2 name: ")
+        else:
+            logger.debug(f"Assigning computer difficulty to {args.pvc}")
+            player_2 = AIPlayerDifficulty.generate_player(args.pvc)
+    except KeyboardInterrupt:
+        logger.info("Exiting...")
+        exit(0)
 
-    computer = SmartComputerPlayer()
-    place_ships(computer)
-    logger.info("Computer ships placed")
+    place_ships(player_1)
+    logger.info(f"{player_1} ships placed")
 
-    if args.log_level == 'DEBUG':
-        logger.debug(f"Computer board: {computer.board}")
-        clear_screen()
-        render_player_board(computer.board.player_lines())
-        print_coord_row()
+    place_ships(player_2)
+    logger.info(f"{player_2} ships placed")
 
-    winner = play(player, computer, args.horizontal)
+    winner = play(player_1, player_2, args.horizontal)
 
     clear_screen()
-    render_game_horizontal(player.board, computer.board)
+    render_game_horizontal(player_1.board, player_2.board)
 
     logger.info(f"{winner} wins!")
     print(f"{winner} wins!")

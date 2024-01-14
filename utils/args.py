@@ -8,11 +8,11 @@ from constants.log_level import LogLevel
 @dataclass(frozen=True, repr=True, eq=True)
 class Args:
     verbose: bool
-    _log_level: LogLevel
+    log_level: LogLevel
     log_file_extension: str
     horizontal: bool
     pvp: bool
-    pvc: int
+    pvc: AIPlayerDifficulty
 
     def __str__(self) -> str:
         return str(
@@ -24,10 +24,6 @@ class Args:
                 'pvp': self.pvp,
             },
         )
-
-    @property
-    def log_level(self) -> LogLevel:
-        return LogLevel[self._log_level]
 
     def parseArgs():
         parser = argparse.ArgumentParser(
@@ -45,11 +41,11 @@ class Args:
 
         parser.add_argument(
             '--log-level',
-            dest='_log_level',
-            default=LogLevel.INFO.name,
+            dest='log_level',
+            default=LogLevel.INFO,
             help='Set log level to debug, info, warning, error, critical',
-            choices=[level.name for level in LogLevel],
-            type=str.upper,
+            choices=list(LogLevel),
+            type=LogLevel,
             metavar='LOG_LEVEL',
         )
 
@@ -70,20 +66,20 @@ class Args:
         )
 
         parser.add_argument(
+            '--pvc',
+            dest='pvc',
+            default=AIPlayerDifficulty.EASY,
+            help='Set gameplay difficulty to player vs computer. Options: EASY, MEDIUM',
+            type=AIPlayerDifficulty,
+            choices=list(AIPlayerDifficulty),
+            metavar='PVC',
+        )
+
+        parser.add_argument(
             '--pvp',
             action='store_true',
             dest='pvp',
             help='Set gameplay to player vs player',
-        )
-
-        parser.add_argument(
-            '--pvc',
-            dest='pvc',
-            default=AIPlayerDifficulty.EASY.value,
-            help='Set gameplay difficulty to player vs computer',
-            type=int,
-            choices=list(AIPlayerDifficulty),
-            metavar='PVC',
         )
 
         args = parser.parse_args()

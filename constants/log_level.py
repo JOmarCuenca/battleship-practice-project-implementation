@@ -6,3 +6,6 @@ class LogLevel(Enum):
     WARNING = "WARNING"
     ERROR = "ERROR"
     CRITICAL = "CRITICAL"
+
+    def __str__(self) -> str:
+        return self.name

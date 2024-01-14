@@ -5,9 +5,9 @@ from errors.input_exceptions import InvalidDifficultyException
 
 
 class AIPlayerDifficulty(Enum):
-    EASY = 1
-    MEDIUM = 2
-    # HARD = 3
+    EASY = "EASY"
+    MEDIUM = "MEDIUM"
+    # HARD = "HARD"
 
     @staticmethod
     def generate_player(difficulty: "AIPlayerDifficulty") -> ComputerPlayer:
@@ -18,3 +18,6 @@ class AIPlayerDifficulty(Enum):
                 return SmartComputerPlayer()
             case _:
                 raise InvalidDifficultyException(difficulty)
+            
+    def __str__(self) -> str:
+        return self.name.lower()
