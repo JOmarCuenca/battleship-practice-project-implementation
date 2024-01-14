@@ -1,4 +1,5 @@
 from classes.board import Board
+from classes.game import Game
 from classes.ship import SHIPS_PER_GAME
 from classes.player import Player, HumanPlayer
 from constants.str_coordinates import StringCoordinate
@@ -116,25 +117,21 @@ def place_ships(player: Player):
         print_coord_row()
 
 
-def play(player_1: Player, player_2: Player, horizontal: bool = False) -> Player:
-    humans = isinstance(player_1, HumanPlayer) or isinstance(
-        player_2, HumanPlayer)
-    turns = cycle([player_1, player_2])
-
+def play(game: Game, horizontal: bool = False) -> Player:
     if randint(0, 1) == 1:
         # Player 2 starts
-        next(turns)
+        game.next_turn()
 
-    attacking_player = next(turns)
+    attacking_player = game.next_turn()
 
     game_over = False
 
     while not game_over:
-        if humans:
+        if game.contains_humans():
             clear_screen()
-        defender = next(turns)
+        defender = game.next_turn()
 
-        if humans:
+        if game.contains_humans():
             if horizontal:
                 render_game_horizontal(attacking_player.board, defender.board)
             else:
@@ -175,6 +172,43 @@ def play(player_1: Player, player_2: Player, horizontal: bool = False) -> Player
     return attacking_player
 
 
+def begin_game(game: Game, number_sets=1, horizontal: bool = False):
+    logger.info("Beginning game")
+
+    while not game.finished:
+
+        player_1, player_2 = game.player_1, game.player_2
+
+        place_ships(player_1)
+        logger.info(f"{player_1} ships placed")
+
+        place_ships(player_2)
+        logger.info(f"{player_2} ships placed")
+
+        winner = play(game, horizontal)
+
+        clear_screen()
+        render_game_horizontal(player_1.board, player_2.board)
+
+        logger.info(f"{winner} wins!")
+
+        game.finish_game_set(winner)
+
+        if not game.contains_humans() and number_sets > 1:
+            logger.info("Resetting game set")
+            game.reset_game_set()
+            number_sets -= 1
+            logger.info("Game set reset")
+
+        elif game.contains_humans():
+            answer = input("Play again? (y/n): ").lower()
+
+            if answer == 'y':
+                logger.info("Resetting game set")
+                game.reset_game_set()
+                logger.info("Game set reset")
+
+
 def main():
     args = Args.parseArgs()
     init_log_record(args.log_level, args.log_file_extension, args.verbose)
@@ -193,19 +227,22 @@ def main():
         logger.info("Exiting...")
         exit(0)
 
-    place_ships(player_1)
-    logger.info(f"{player_1} ships placed")
+    game = Game(player_1, player_2)
 
-    place_ships(player_2)
-    logger.info(f"{player_2} ships placed")
+    begin_game(game, horizontal=args.horizontal)
 
-    winner = play(player_1, player_2, args.horizontal)
+    logger.info(f"Total games played: {game.total_games_played}")
 
-    clear_screen()
-    render_game_horizontal(player_1.board, player_2.board)
+    p1_wins, p2_wins = game.game_score
 
-    logger.info(f"{winner} wins!")
-    print(f"{winner} wins!")
+    if p1_wins > p2_wins:
+        logger.info(f"{player_1} wins the game!")
+    elif p2_wins > p1_wins:
+        logger.info(f"{player_2} wins the game!")
+    else:
+        logger.info("It's a tie!")
+
+    logger.info("Thanks for playing!")
 
 
 if __name__ == '__main__':

@@ -48,7 +48,7 @@ python3 main.py -h
 ## Beginner
 
 - [x] Make the UI in the console using ascii characters, printable so the user can play the game vertically, (meaning on side of the board above the other) against the opponent
-- [ ] Make the game using replayable, meaning play multiple games on a row
+- [x] Make the game using replayable, meaning play multiple games on a row
 - [x] Make the commit messages descriptive and relevant (keep a good version control of the program)
 - [x] Divide the program into reusable functions that make the code readable
 - [x] Edit the `Readme.md` file to have instructions on how to install (if required) and how to run it.
