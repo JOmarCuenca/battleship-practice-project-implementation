@@ -4,14 +4,13 @@ from classes.ship import SHIPS_PER_GAME
 from classes.player import Player, HumanPlayer
 from constants.str_coordinates import StringCoordinate
 from constants.ai_player_difficulty import AIPlayerDifficulty
-from errors.input_exceptions import InvalidInputException
+from errors.input_exceptions import InvalidInputException, UnknownGameObjectException
 from errors.board_exceptions import GameBoardException
 from errors.game_exceptions import GameplayException
 from utils import init_log_record, logger
 from utils.args import Args
 from utils.terminal_utils import clear_screen
 
-from itertools import cycle
 from random import randint
 
 
@@ -118,7 +117,9 @@ def place_ships(player: Player):
 
 
 def play(game: Game, horizontal: bool = False) -> Player:
-    if randint(0, 1) == 1:
+
+    # Randomly choose who starts if game wasn't started before
+    if not game.paused and randint(0, 1) == 1:
         # Player 2 starts
         game.next_turn()
 
@@ -179,11 +180,13 @@ def begin_game(game: Game, number_sets=1, horizontal: bool = False):
 
         player_1, player_2 = game.player_1, game.player_2
 
-        place_ships(player_1)
-        logger.info(f"{player_1} ships placed")
+        if not player_1.boats_placed:
+            place_ships(player_1)
+            logger.info(f"{player_1} ships placed")
 
-        place_ships(player_2)
-        logger.info(f"{player_2} ships placed")
+        if not player_2.boats_placed:
+            place_ships(player_2)
+            logger.info(f"{player_2} ships placed")
 
         winner = play(game, horizontal)
 
@@ -209,25 +212,55 @@ def begin_game(game: Game, number_sets=1, horizontal: bool = False):
                 logger.info("Game set reset")
 
 
-def main():
-    args = Args.parseArgs()
-    init_log_record(args.log_level, args.log_file_extension, args.verbose)
-
+def create_game(pvp: bool, pvc: bool) -> Game:
     player_1, player_2 = HumanPlayer(), None
 
     try:
-        if args.pvp:
+        if pvp:
             player_1.name = input("Player 1 name: ")
             player_2 = HumanPlayer()
             player_2.name = input("Player 2 name: ")
         else:
-            logger.debug(f"Assigning computer difficulty to {args.pvc}")
-            player_2 = AIPlayerDifficulty.generate_player(args.pvc)
+            logger.debug(f"Assigning computer difficulty to {pvc}")
+            player_2 = AIPlayerDifficulty.generate_player(pvc)
     except KeyboardInterrupt:
         logger.info("Exiting...")
         exit(0)
 
-    game = Game(player_1, player_2)
+    return Game(player_1, player_2)
+
+
+@logger.catch(reraise=True)
+def resume_game(previous_game_path: str) -> Game:
+    game = None
+
+    try:
+        with open(previous_game_path, 'rb') as file:
+            game = Game.resume_game_set(file.read())
+
+    except FileNotFoundError:
+        logger.error(f"File {previous_game_path} not found")
+        logger.info("Exiting...")
+        exit(0)
+
+    except UnknownGameObjectException as e:
+        logger.error("The file detected didn't contain a game object")
+        logger.info("Exiting...")
+        exit(0)
+
+    if game.finished:
+        logger.info("Game is finished and paused. Resuming...")
+        game.resume_game_set()
+
+    return game
+
+
+def main():
+    args = Args.parseArgs()
+    init_log_record(args.log_level, args.log_file_extension, args.verbose)
+
+    game = resume_game(args.previous_game_path) if args.previous_game_path else create_game(
+        args.pvp, args.pvc)
 
     begin_game(game, horizontal=args.horizontal)
 
@@ -236,9 +269,9 @@ def main():
     p1_wins, p2_wins = game.game_score
 
     if p1_wins > p2_wins:
-        logger.info(f"{player_1} wins the game!")
+        logger.info(f"{game.player_1} wins the game!")
     elif p2_wins > p1_wins:
-        logger.info(f"{player_2} wins the game!")
+        logger.info(f"{game.player_2} wins the game!")
     else:
         logger.info("It's a tie!")
 

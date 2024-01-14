@@ -13,6 +13,7 @@ class Args:
     horizontal: bool
     pvp: bool
     pvc: AIPlayerDifficulty
+    previous_game_path: str
 
     def __str__(self) -> str:
         return str(
@@ -22,6 +23,8 @@ class Args:
                 'log_file_extension': self.log_file_extension,
                 'horizontal': self.horizontal,
                 'pvp': self.pvp,
+                'pvc': self.pvc,
+                'previous_game_path': self.previous_game_path,
             },
         )
 
@@ -80,6 +83,14 @@ class Args:
             action='store_true',
             dest='pvp',
             help='Set gameplay to player vs player',
+        )
+
+        parser.add_argument(
+            '--previous_game_file',
+            dest='previous_game_path',
+            help='Path to a previous game file to load',
+            type=str,
+            metavar='PREVIOUS_GAME_PATH',
         )
 
         args = parser.parse_args()
